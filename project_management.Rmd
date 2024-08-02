@@ -1,5 +1,5 @@
 ---
-pagetitle: "Project management"
+pagetitle: "Package and project management"
 author: "Dainius Masiliūnas, Loïc Dutrieux, Jan Verbesselt, Johannes Eberenz"
 date: "`r format(Sys.time(), '%Y-%m-%d')`"
 output:
@@ -25,17 +25,254 @@ code[class^="sourceCode bash"]::before { content: "Bash Source"; }
 
 <font size="6">[WUR Geoscripting](https://geoscripting-wur.github.io/)</font> <img src="https://www.wur.nl/upload/854757ab-168f-46d7-b415-f8b501eebaa5_WUR_RGB_standard_2021-site.svg" alt="WUR logo" style="height: 35px; margin:inherit;"/>
 
+# Learning objectives
+
+* Learn about graphical interfaces for programming in R and Python
+* Understand the structure of a package in R and Python
+* Adopt some good scripting/programming habits
+* Learn how to find help with solving programming problems
+
 # Graphical user interfaces (GUIs) and integrated development environments (IDEs)
+
+It's time for us to actually delve into R and Python programming!
+But how do we do that efficiently?
+We could write scripts in Notepad and run them, but that is not particularly efficient, as there are many graphical user interfaces (GUIs) that can help us write code faster.
+Comprehensive GUIs that help with writing, debugging and packaging code are called integrated development environments (IDEs).
 
 ## R
 
+There are multiple IDEs for R.
+The most popular one is *RStudio*, as it is developed by a company that is very active in contributing to R (Hadley Wickham and others).
+RStudio is cross-platform and open-source.
+It comes in two types: *RStudio Desktop* is a regular desktop app, and *RStudio Server* is meant for running on a remote server, to which you can connect through your web browser.
+Interestingly enough, the desktop version is in fact just *RStudio Server* running locally, with an integrated web browser based on *Google Chrome*.
+
+Even though *RStudio* is very popular, it is not the only IDE for R.
+*RKWard* is an alternative IDE, aimed at easier learning of R for people coming from other statistical software, such as *SPSS*.
+It includes menus for common statistical analysis algorithms, such as getting descriptive statistics, running statistical tests, and making plots.
+It also includes an editor for data tables.
+*RKWard* is an open-source native desktop app that is developed on Linux, but has also been ported to other platforms, including Windows.
+
+Furthermore, there are cross-language GUIs/IDEs, such as *Jupyter*, whose name is a portmanteau of **Ju**lia, **Pyt**hon and **R**.
+*Jupyter* can run different language interpreters, what it calls kernels, for each script that is open, therefore scripts in multiple languages can be edited at the same time in the same interface.
+
+One thing to keep in mind is that there is a distinction between a programming language, such as R, and its IDEs, such as *RStudio*.
+Which IDE you use is up to your own personal preference.
+Which IDE you used to develop code does not matter, because in the end you just have an R script that can be run on any of the IDEs, or directly from the command line.
+What does matter is that the script is written in the R language, as the users will need to have the R interpreter installed in order to run the script.
+Likewise, the packages that you use in your script are also important, as the users will need to install them before they can run your script.
+Therefore, whenever you refer to scripts and packages, for instance when writing a thesis, you need to specify what language the scripts are written in, and what packages (and ideally what versions) you used.
+You should not mention which IDE you used, as that is irrelevant to the readers.
+For example, you should not write "the scripts are written in RStudio", but rather, you should write "the scripts are written in R, using package `lattice` version 0.22".
+In fact, you should also cite the authors of the language and the packages you used.
+R includes a handy function `citation()` to help you cite:
+
+```{r}
+citation()
+```
+
+It also works on packages:
+
+```{r}
+citation("lattice")
+```
+
+There are more IDEs, such as R Commander, but we will not be talking about them within the scope of this course.
+Nevertheless, feel free to use whichever IDE is your favourite!
+
+```{block type="alert alert-info"}
+As a sidenote, IDEs can change how certain commands in R work.
+For instance, there are two commands in R that load packages: `library()` and `require()`.
+Most IDEs make no difference between the two; `require()` just gives a warning if it can't load a package, whereas `library()` stops with an error.
+However, in *RKWard*, running `require()` on a package that does not exist will result in its package management dialogue opening with the required packages preselected for installation, and closing the dialogue will result in a successful loading of the package (if it was installed successfully).
+Therefore, do not use `require("package")` to check if `package` is installed, otherwise it will be installed twice under RKward.
+Instead, you can use `"package" %in% installed.packages()`.
+```
+
+Next, let's look a bit more in detail at the IDEs described above and their configuration options.
+
+### RStudio
+
+In the virtual machines provided in the course, RStudio is already installed for you.
+In case you are working on your own computer and would like to know how to install *R* and *RStudio*, see the [RStudio website](https://www.rstudio.com/products/rstudio/download/).
+
+If you are new to *RStudio* take a look at the following summary YouTube video about how to use RStudio: [Intro to RStudio (6 min)](https://www.youtube.com/watch?v=FIrsOBy5k58).
+In it you will learn how to navigate the RStudio environment and even run some code.
+This will be helpful for later in the course.
+
+Additionally, the first time you open *RStudio* it's helpful to change some global settings.
+To do this go to *Tools* → *Global Options...* in the top menu bar of *RStudio*.
+The following box should appear.
+Set the settings to match that of the screenshot, namely, *Never save the workspace to .RData file on exit* and uncheck the boxes under *History* and *Restore .RData*.
+The effect is that RStudio will stop prompting you on exit about whether you want to save the workspace and reload it on next start, which will save you time answering prompts and save time opening RStudio.
+Most importantly, it will make sure that restarting RStudio leaves you with a clean environment, equal to what another user of your code would start with, so you can properly test your code, and restart RStudio in case something goes wrong to get back to a clean state.
+
+![Global Options](../Scripting4GeoIntro/figs/global_options.png)
+
+To make a new script, click on *File* -> *New File* -> *R Script*, and a new editor pane will open, allowing you to write code.
+When you write a line, you can run each individual line that your text cursor is on by hitting *Ctrl+Enter*.
+To install packages, aside from using the R console below (`install.packages()` function), you can install them through the graphical *Packages* pane at the lower right corner of the screen, where you can search for and install packages and their updates.
+
+### RKWard
+
+RKWard is also preinstalled on the virtual machine.
+On your own computer, you can get it from the [RKWard website](https://rkward.kde.org/Download_RKWard.html).
+
+When you launch RKWard, it will start a first-start setup wizard, that suggests installing some additional packages.
+Feel free to simply dismiss it by clicking *Cancel*.
+To start a new file, click *Create* -> *Script File*.
+Typically you can also use *Ctrl+Enter* to run each line that your cursor is on.
+RKWard sometimes gives too many autocompletion tooltips, you can disable them by going to *Settings* -> *Configure Script Editor* and unchecking *Function call tip*.
+
+You can install packages, aside from using the `install.packages()` function in the R console below, through *Settings* -> *Manage R packages and plugins...*.
+You will be prompted to select a mirror, just use the top one (*0-Cloud*) to automatically select the best one.
+The tab *Install / Update / Remove R packages* lists all packages that are available on CRAN, packages that are installed and are the latest version, and packages that are installed but can be updated.
+To install packages, click the checkbox next to their names, and to remove packages, uncheck them.
+The changes will only be applied once you click *Apply*.
+
+## Jupyter
+
+*Jupyter* comes in two types as well: *Jupyter Notebook* and *Jupyter Lab*.
+
+*Jupyter Notebook* is an older interface that is based on the notebook concept, where you combine text with code in a single (`.ipynb`) file.
+*Jupyter Notebooks* are extremely popular in the Python community, as they are easy for writing documentation and tutorials (vignettes).
+They are displayed automatically in GitLab and GitHub.
+However, *Jupyter Notebooks* are less popular in R, because *RMarkdown* provides a similar solution for R (and recently *Quarto* extends *RMarkdown* beyond R, therefore directly competing with *Jupyter Notebooks*).
+An issue with *Jupyter Notebooks* is that, due to mixing of text and code, you cannot run a notebook from the terminal, or in fact use any IDE other than *Jupyter Notebook*.
+They are also not well compatible with *Git*, as multiple developers cannot edit the same file without causing spurious conflicts, albeit there are workarounds.
+
+*Jupyter Lab* is a newer interface that allows directly editing R and Python files, in addition to opening *Jupyter Notebooks*.
+Its advantage is that it can edit multiple scripts in multiple languages at the same time, but its disadvantage is that it cannot provide functionality that is specific to any one language, therefore it is relatively barebones.
+
+Like *RStudio Server*, *Jupyter* is mainly designed to be run on a server.
+It can be run locally by launching a server and then connecting to it through a web browser.
+However, since *Jupyter* is written in Python, it requires specific Python setup to install.
+We will learn more about how to run *Jupyter* in the Python part of the course.
+
+The fact that *Jupyter* is open source and designed to work as a server has created opportunities for Google to create something of a Google Docs version of *Jupyter*, that is called *Google Collaboratory*, or *Google Colab* for short.
+Google provides every user of *Google Colab* with computer resources to run Python or R.
+It is therefore the easiest way to run Python without changing anything on your own computer.
+If anything goes wrong, you can always create a new *Colab* notebook and start over.
+
+First, go to the [Google Colab website](https://colab.research.google.com) and click on *+ New notebook* to create a *Colab* notebook.
+The default kernel type in *Google Colab* is Python, but you can change it to R by going to *Runtime* -> *Change runtime type* and selecting *R*.
+Click *Connect* at the top right to start the kernel, so that you can run code blocks.
+
+Note that *Google Colab* has a special character, the exclamation point `!`, which allows you to run Bash commands within Python code blocks.
+This is very useful and important for installing Python packages, as they are typically installed using the `pip` command from Bash.
+You can try running a code block like this to install and load the rasterio package:
+```{python, eval=FALSE}
+!pip install rasterio
+import rasterio
+```
+
 ## Python
 
-# What are packages and how do you install them?
+Aside from Jupyter, you can use other IDEs for Python.
+A simple to install IDE is called [Spyder](https://www.spyder-ide.org/), as it is its own Python package.
+You can also use more complex IDEs for Python scripting, such as [PyCharm](https://www.jetbrains.com/pycharm/) and Microsoft [Visual Studio Code](https://code.visualstudio.com/), but they are more complicated to install.
+
+You will learn more about Python IDEs later in the course. For now, we will stick with using *Google Colab* to run Python code.
+
+# What are packages?
+
+Packages extend the functionality of a programming language by providing new functions (and/or datasets).
+There is a huge variety of packages in both R and Python.
+But how are packages made?
+
+In essence, packages are nothing more than bundles of scripts!
+Typically, these scripts provide functions: small pieces of scripts that do one particular task, typically with a name and input arguments.
+By loading a package, we simply place these functions in what is called the global environment: a part of your computer memory that holds your variables, function definitions, datasets etc. for the currently running session of R or Python.
+
+Packages are formalised by a set of rules that all developers have to abide by.
+One important rule is that the action of merely loading a package should not cause harm to the user (or their environment): functions can be loaded into the global environment, but should not overwrite what is already there, or run any code (which could potentially delete files etc.).
+Therefore, packages typically consist of script files with nothing other than function definitions.
+Running those functions is left up to the users in their own scripts.
+How to run them is documented using examples, either in comments next to the functions, or in an external help file, but never directly as executable code.
+
+In addition to the scripts (and their documentation), packages typically include some metadata, such as the name of the author, package version, what other packages are needed to run this package, etc.
+In R, this metadata is mandatory, whereas in Python it's to some extent optional.
+
+Packages also typically follow a particular structure, i.e. where files are located and how.
+Let's take a closer look at the package structure in both Python and R.
 
 # Package structure
 
 ## In Python
+
+A simple package (module) in Python is simply a directory with a Python file in it.
+In Colab, this code will create a directory and a Python file containing a Hello World example:
+
+```{bash, eval=FALSE}
+! mkdir -p MyPackage
+! echo "def helloworld():" > MyPackage/helloworld.py
+! echo "    print('hello world')" >> MyPackage/helloworld.py
+```
+
+Now we can directly make use of our new `helloworld()` function in Python:
+
+```{python, eval=FALSE}
+import MyPackage.helloworld as mphw
+
+mphw.helloworld()
+```
+
+In the import name, `MyPackage` is the name of the directory, and `helloworld` is the name of the file.
+We rename `MyPackage.helloworld` to `mphw` for brevity, but it's optional.
+
+Well, that was easy!
+
+Though our package is technically not a complete package yet, as it can only be run if we copy the file to every code project that wants to use our function.
+A true package can be installed and then run from any place on your computer.
+Thankfully that's also easy to do!
+All we need is to provide a bit more structure and metadata.
+
+The metadata file in Python is called `pyproject.toml`, and it has to be in a subdirectory with the name of the package, as the name will appear in the list of packages.
+The actual functions need to be in a subdirectory of that subdirectory, with the name of the package, as the package will appear in Python.
+Typically, both of these names should be the same, otherwise it will result in user confusion.
+Lastly, if we want to be able to just import the package to get our functions, without having to specify the name of the file that holds the functions we want to import, we should call the script with our functions `__init__.py`.
+
+In summary, the package structure looks like this:
+
+```
+MyPackage
+├── MyPackage
+│   └── __init__.py
+└── pyproject.toml
+```
+
+Let's make our files match this structure!
+First, make the subdirectory `MyPackage/MyPackage`, and then rename our `helloworld.py` to `MyPackage/MyPackage/__init__.py`:
+
+```{bash, eval=FALSE}
+! mkdir MyPackage/MyPackage
+! mv MyPackage/helloworld.py MyPackage/MyPackage/__init__.py
+```
+
+Next, let's add the project metadata.
+We only need to specify the name of the package and its version.
+To prevent confusion, use the same name as the name of the two directories.
+
+```{bash, eval=FALSE}
+! echo '[project]' > MyPackage/pyproject.toml
+! echo 'name = "MyPackage"' >> MyPackage/pyproject.toml
+! echo 'version = "0.1"' >> MyPackage/pyproject.toml
+```
+
+Bam, we now have a true package! We can install it with `pip`:
+
+```{bash, eval=FALSE}
+! pip install MyPackage
+```
+
+And now we can use our function from any directory simply as:
+
+```{python, eval=FALSE}
+import MyPackage
+
+MyPackage.helloworld()
+```
+
 ## In R
 
 
