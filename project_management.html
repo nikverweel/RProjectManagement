@@ -1288,8 +1288,8 @@ name as the name of the two directories.</p>
 <span id="cb10-3"><a href="#cb10-3" tabindex="-1"></a><span class="ot">! </span><span class="bu">echo</span> <span class="st">&#39;version = &quot;0.1&quot;&#39;</span> <span class="op">&gt;&gt;</span> MyPackage/pyproject.toml</span></code></pre></div>
 <p>Bam, we now have a true package! We can install it with
 <code>pip</code>:</p>
-<div class="sourceCode" id="cb11"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb11-1"><a href="#cb11-1" tabindex="-1"></a><span class="ot">! </span><span class="ex">pip</span> install MyPackage</span></code></pre></div>
-<p>And now we can use our function simply as:</p>
+<div class="sourceCode" id="cb11"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb11-1"><a href="#cb11-1" tabindex="-1"></a><span class="ot">! </span><span class="ex">pip</span> install ./MyPackage</span></code></pre></div>
+<p>And now we can use our function from any directory simply as:</p>
 <div class="sourceCode" id="cb12"><pre class="sourceCode python"><code class="sourceCode python"><span id="cb12-1"><a href="#cb12-1" tabindex="-1"></a><span class="im">import</span> MyPackage</span>
 <span id="cb12-2"><a href="#cb12-2" tabindex="-1"></a></span>
 <span id="cb12-3"><a href="#cb12-3" tabindex="-1"></a>MyPackage.helloworld()</span></code></pre></div>

@@ -262,7 +262,7 @@ To prevent confusion, use the same name as the name of the two directories.
 Bam, we now have a true package! We can install it with `pip`:
 
 ```{bash, eval=FALSE}
-! pip install MyPackage
+! pip install ./MyPackage
 ```
 
 And now we can use our function from any directory simply as:
