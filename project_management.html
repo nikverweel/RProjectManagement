@@ -7,7 +7,7 @@
 
         <meta name="author" content="Dainius Masiliūnas, Loïc Dutrieux, Jan Verbesselt, Johannes Eberenz" />
     
-        <meta name="date" content="2024-08-02" />
+        <meta name="date" content="2024-08-06" />
     
     <title>Package and project management</title>
 
@@ -905,7 +905,7 @@ margin-left: 0 !important;
       <!-- html_clean authors -->
          <h4 class="author"><em>Dainius Masiliūnas, Loïc Dutrieux, Jan
 Verbesselt, Johannes Eberenz</em></h4>
-            <h4 class="date"><em>2024-08-02</em></h4>
+            <h4 class="date"><em>2024-08-06</em></h4>
       
       
    
@@ -1296,12 +1296,95 @@ name as the name of the two directories.</p>
 </div>
 <div id="in-r" class="section level2">
 <h2>In R</h2>
+<p>Packages in R are also nothing more than an organised collection of R
+scripts. Compared to Python, there are a few more files necessary to
+make an R package, but thankfully, we also have tools that help to
+create one!</p>
+<p>Once again, let’s make a Hello World function and put it into a
+file:</p>
+<div class="sourceCode" id="cb13"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb13-1"><a href="#cb13-1" tabindex="-1"></a><span class="bu">echo</span> <span class="st">&#39;HelloWorld &lt;- function() print(&quot;Hello world&quot;)&#39;</span> <span class="op">&gt;</span> HelloWorld.r</span></code></pre></div>
+<p>Let’s make it into a package! We use the function
+<code>package.skeleton()</code> to autocreate a package structure:</p>
+<div class="sourceCode" id="cb14"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1" tabindex="-1"></a><span class="fu">package.skeleton</span>(<span class="at">name =</span> <span class="st">&quot;MyPackage&quot;</span>, <span class="at">code_files =</span> <span class="st">&quot;HelloWorld.r&quot;</span>)</span></code></pre></div>
+<pre><code>## Creating directories ...</code></pre>
+<pre><code>## Creating DESCRIPTION ...</code></pre>
+<pre><code>## Creating NAMESPACE ...</code></pre>
+<pre><code>## Creating Read-and-delete-me ...</code></pre>
+<pre><code>## Copying code files ...</code></pre>
+<pre><code>## Making help files ...</code></pre>
+<pre><code>## Done.</code></pre>
+<pre><code>## Further steps are described in &#39;./MyPackage/Read-and-delete-me&#39;.</code></pre>
+<p>Let’s follow the instructions to read the file
+<code>MyPackage/Read-and-delete-me</code>. And then delete it:</p>
+<div class="sourceCode" id="cb23"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb23-1"><a href="#cb23-1" tabindex="-1"></a><span class="fu">rm</span> MyPackage/Read-and-delete-me</span></code></pre></div>
+<p>Let’s see what is the R package structure:</p>
+<div class="sourceCode" id="cb24"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb24-1"><a href="#cb24-1" tabindex="-1"></a><span class="ex">tree</span> <span class="at">-n</span> MyPackage</span></code></pre></div>
+<pre><code>## MyPackage
+## ├── DESCRIPTION
+## ├── man
+## │   ├── HelloWorld.Rd
+## │   └── MyPackage-package.Rd
+## ├── NAMESPACE
+## └── R
+##     └── HelloWorld.r
+## 
+## 3 directories, 5 files</code></pre>
+<p>It’s a little bit more complicated than Python, but not by much. The
+script files are stored in a directory called <code>R</code> (as R
+packages can also include C++ code etc.), and our script file is already
+there. Next we have the <code>DESCRIPTION</code> file, which, like the
+<code>pyproject.toml</code> file we saw for Python, includes metadata
+about the package. You can open it and edit it. Lastly, we have the
+<code>NAMESPACE</code> file, which states which functions will be
+accessible to package users (as opposed to only internal to the
+package), and a <code>man</code> directory, which includes the
+documentation manual entries. We have two entries:
+<code>HelloWorld.Rd</code>, which is the description of our
+<code>HelloWorld</code> function, and <code>MyPackage-package.Rd</code>,
+which is a description of the package itself. These documentation files
+are written in an <a href="https://cran.r-project.org/doc/manuals/R-exts.html#Rd-format">R
+variant of LaTeX</a>.</p>
+<p>Let’s install our package! First we need to build it, from the
+terminal:</p>
+<div class="sourceCode" id="cb26"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb26-1"><a href="#cb26-1" tabindex="-1"></a><span class="ex">R</span> CMD build MyPackage</span></code></pre></div>
+<pre><code>## * checking for file ‘MyPackage/DESCRIPTION’ ... OK
+## * preparing ‘MyPackage’:
+## * checking DESCRIPTION meta-information ... OK
+## * installing the package to process help pages
+## * saving partial Rd database
+## * checking for LF line-endings in source and make files and shell scripts
+## * checking for empty or unneeded directories
+## * building ‘MyPackage_1.0.tar.gz’</code></pre>
+<p>As you can see, the package is just a zip of our package files, plus
+some metadata cache. Now we can use R itself to install our new
+package:</p>
+<div class="sourceCode" id="cb28"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb28-1"><a href="#cb28-1" tabindex="-1"></a><span class="fu">install.packages</span>(<span class="st">&quot;./MyPackage_1.0.tar.gz&quot;</span>)</span></code></pre></div>
+<pre><code>## Installing package into &#39;/home/osboxes/R/x86_64-pc-linux-gnu-library/4.4&#39;
+## (as &#39;lib&#39; is unspecified)</code></pre>
+<pre><code>## inferring &#39;repos = NULL&#39; from &#39;pkgs&#39;</code></pre>
+<p>Perfect, we can immediately load it and use it:</p>
+<div class="sourceCode" id="cb31"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb31-1"><a href="#cb31-1" tabindex="-1"></a><span class="fu">library</span>(MyPackage)</span>
+<span id="cb31-2"><a href="#cb31-2" tabindex="-1"></a></span>
+<span id="cb31-3"><a href="#cb31-3" tabindex="-1"></a><span class="fu">HelloWorld</span>()</span></code></pre></div>
+<pre><code>## [1] &quot;Hello world&quot;</code></pre>
+<p>As a bonus, we can also see the documentation we had in the
+<code>man</code> files:</p>
+<div class="sourceCode" id="cb33"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb33-1"><a href="#cb33-1" tabindex="-1"></a>?HelloWorld</span></code></pre></div>
+<p>That was also pretty easy!</p>
+<p>To summarise, we have learned that packages in both Python and R are
+nothing more than scripts that contain functions, in a particular
+directory structure. If we start developing our projects with that
+structure in mind, we can make packages out of our scripts very
+easily!</p>
 </div>
 </div>
 <div id="good-programming-habits" class="section level1">
 <h1>Good programming habits</h1>
 <div id="project-structure" class="section level2">
 <h2>Project structure</h2>
+</div>
+<div id="documentation" class="section level2">
+<h2>Documentation</h2>
 </div>
 </div>
 <div id="how-to-find-help" class="section level1">
@@ -1338,6 +1421,7 @@ name as the name of the two directories.</p>
        <li><a href="#good-programming-habits" id="toc-good-programming-habits">Good programming habits</a>
        <ul>
        <li><a href="#project-structure" id="toc-project-structure">Project structure</a></li>
+       <li><a href="#documentation" id="toc-documentation">Documentation</a></li>
        </ul></li>
        <li><a href="#how-to-find-help" id="toc-how-to-find-help">How to
        find help</a>

@@ -275,10 +275,88 @@ MyPackage.helloworld()
 
 ## In R
 
+Packages in R are also nothing more than an organised collection of R scripts.
+Compared to Python, there are a few more files necessary to make an R package, but thankfully, we also have tools that help to create one!
+
+Once again, let's make a Hello World function and put it into a file:
+```{bash}
+echo 'HelloWorld <- function() print("Hello world")' > HelloWorld.r
+```
+
+Let's make it into a package! We use the function `package.skeleton()` to autocreate a package structure:
+
+```{r}
+package.skeleton(name = "MyPackage", code_files = "HelloWorld.r")
+```
+
+Let's follow the instructions to read the file `MyPackage/Read-and-delete-me`.
+And then delete it:
+
+```{bash}
+rm MyPackage/Read-and-delete-me
+```
+
+Let's see what is the R package structure:
+
+```{bash}
+tree -n MyPackage
+```
+
+It's a little bit more complicated than Python, but not by much.
+The script files are stored in a directory called `R` (as R packages can also include C++ code etc.), and our script file is already there.
+Next we have the `DESCRIPTION` file, which, like the `pyproject.toml` file we saw for Python, includes metadata about the package.
+You can open it and edit it.
+Lastly, we have the `NAMESPACE` file, which states which functions will be accessible to package users (as opposed to only internal to the package), and a `man` directory, which includes the documentation manual entries.
+We have two entries: `HelloWorld.Rd`, which is the description of our `HelloWorld` function, and `MyPackage-package.Rd`, which is a description of the package itself.
+These documentation files are written in an [R variant of LaTeX](https://cran.r-project.org/doc/manuals/R-exts.html#Rd-format).
+
+Let's install our package!
+First we need to build it, from the terminal:
+
+```{bash}
+R CMD build MyPackage
+```
+
+As you can see, the package is just a zip of our package files, plus some metadata cache.
+Now we can use R itself to install our new package:
+
+```{r}
+install.packages("./MyPackage_1.0.tar.gz")
+```
+
+Perfect, we can immediately load it and use it:
+
+```{r}
+library(MyPackage)
+
+HelloWorld()
+```
+
+As a bonus, we can also see the documentation we had in the `man` files:
+
+```{r, eval=FALSE}
+?HelloWorld
+```
+
+That was also pretty easy!
+
+To summarise, we have learned that packages in both Python and R are nothing more than scripts that contain functions, in a particular directory structure.
+If we start developing our projects with that structure in mind, we can make packages out of our scripts very easily!
+
+```{bash include=FALSE}
+rm -rf MyPackage MyPackage_1.0.tar.gz HelloWorld.r
+```
+```{r include=FALSE}
+remove.packages("MyPackage")
+```
 
 # Good programming habits
 
 ## Project structure
+
+
+
+## Documentation
 
 # How to find help
 
