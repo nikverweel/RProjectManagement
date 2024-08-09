@@ -553,6 +553,9 @@ The summary of good practice guidelines below is not exhaustive, but already con
 * Make your own packages, or at least keep a similar directory structure across your projects. 
 * Use version control to develop/maintain your projects and packages.
 
+<!-- Move the following sections from into to linux to here, once we move Linux out:
+
 # How to find help
 
 ## Reproducible examples
+-->
