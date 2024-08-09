@@ -942,6 +942,8 @@ font-size: 70%;
 code[class^="sourceCode r"]::before { content: "R Source";}
 code[class^="sourceCode python"]::before { content: "Python Source"; }
 code[class^="sourceCode bash"]::before { content: "Bash Source"; }
+pre[class^="sourceCode r"] {background-color: #333366;}
+pre[class^="sourceCode python"] {background-color: #555533;}
 </style>
 <p><font size="6"><a href="https://geoscripting-wur.github.io/">WUR
 Geoscripting</a></font>
@@ -1376,23 +1378,72 @@ nothing more than scripts that contain functions, in a particular
 directory structure. If we start developing our projects with that
 structure in mind, we can make packages out of our scripts very
 easily!</p>
+<div class="alert alert-info">
+<p>
+<strong>Tip</strong>: Once you have a package, you can also have it
+uploaded to a package repository, so that others (or you from another
+computer) can easily download and run the code in the package. However,
+it does require you to have your code in good working order and be well
+documented, since, after all, it’s going to be public for everyone to
+see!
+</p>
+<p>
+The package repository for Python is called <em>PyPI</em>, The Python
+Package Index. PyPI is developer-friendly, which means that you can
+easily upload your packages on PyPI without much hassle, as long as your
+project is in a reasonable shape and declares all its dependencies
+properly. See the <a href="https://packaging.python.org/en/latest/tutorials/packaging-projects/">PyPI
+documentation</a> to learn more about how to submit packages to PyPI.
+</p>
+<p>
+The package repository for R is called <em>CRAN</em>, the Comprehensive
+R Archive Network. Unlike PyPI, CRAN is end-user-friendly. That means
+that submitting packages to CRAN is not nearly as easy, because it has
+much higher quality requirements for any (new) packages. All packages
+submitted to CRAN have to pass through both automatic tests (using
+<code>R CMD check</code> command), as well as human review. Your package
+will be rejected if it depends on a package version that is not
+currently on CRAN, if you fail to document any function parameter, make
+any typo anywhere or even fail to use quotes correctly. Therefore, the
+package submission process for CRAN is more akin to peer review for
+publishing a scientific paper. However, it ensures that packages always
+work together with other packages, which immensely simplifies package
+dependency management and allows users to simply use
+<code>install.packages()</code> and expect the new package to just work.
+Packages are also regularly removed from CRAN if they stop working due
+to updates in their dependencies, making sure that all packages on CRAN
+stay compatible with each other. See <a href="https://cran.r-project.org/web/packages/policies.html">CRAN
+documentation</a> for more information about package submission
+requirements.
+</p>
+</div>
 </div>
 </div>
 <div id="good-programming-habits" class="section level1">
 <h1>Good programming habits</h1>
 <div id="project-structure" class="section level2">
 <h2>Project structure</h2>
-<p>As we just learned, packages in R and Python have a specific
-structure that helps packaging and distributing code to others. As
-packages are very easy to create, you can also use them just for
-yourself! For example, if you find that you often reuse the same set of
-functions, it becomes easier to just make a small package for yourself
-and install it in your system, rather than having to look for and copy
-the function into every project you are using it in. For that to be
-easy, you need to stick with a project structure that packages have.
-Another benefit tool of maintaining a consistent project structure is
-that it will make it easier for you to switch from one project to the
-other and immediately understand how things work.</p>
+<p>Making packages is a great way to stay organized, keep track of what
+you are doing and be able to use it quickly and properly at any time.
+Packages are:</p>
+<ul>
+<li>Easy to share with others</li>
+<li>Dependencies are automatically imported and functions are sourced
+(reduces the risk of having broken dependencies)</li>
+<li>Documentation is attached to the functions and cannot be lost (or
+forgotten)</li>
+</ul>
+<p>For these reasons, if you build a package, next year you will still
+be able to run the functions you wrote yesterday. Which is often not the
+case for stand alone functions that are poorly documented and may depend
+on many other functions … that you cannot find any more. So to
+summarize, packages are not only a way to extend functionality, they are
+also the standard way to archive and save functions.</p>
+<p>To make it easy for you to make a package out of your code, you need
+to stick with a project structure that packages have. Another benefit of
+maintaining a consistent project structure is that it will make it
+easier for you to switch from one project to the other and immediately
+understand how things work.</p>
 <p>To practice keeping a consistent project structure, in this course we
 will be following the structure below:</p>
 <div class="float">
@@ -1417,7 +1468,18 @@ functions should be as generic as possible and are <em>sourced</em> and
 called by the <code>main</code> script. The way this is done depends on
 the language used by the <code>main</code> script. For example, in R you
 would write <code>source(&quot;R/myfunction.R&quot;)</code>. Whereas in Python,
-you would use <code>import Python.myfunction</code>.</li>
+you would use <code>import Python.myfunction</code>.
+<ul>
+<li>Each file in the <code>R</code> and <code>Python</code> directory
+should ideally consist of a single function with the same name as the
+file itself, to make it easy to find. In Python it is common to combine
+multiple functions in one file, because typically you refer to the file
+(module) name in addition to the function name (through
+<code>import MyPackage</code>), but it is still good practice to keep
+each function in its own file (so you don’t get confused where each
+function comes from even if you do
+<code>from MyPackage import *</code>).</li>
+</ul></li>
 <li>A <code>data/</code> subdirectory: This directory contains data sets
 of the project. Since Git is not as efficient with non-text files, and
 GitLab has storage limits, you should only put small data sets in that
@@ -1439,17 +1501,17 @@ software licence which you would like your code to have.</li>
 </ul>
 <div class="alert alert-danger">
 <p>
-<strong><em>Warning</em></strong>: <strong><em>Never</em></strong>
-upload large (raster) files to git! If your repository exceeds 100 MiB
-in size, it will no longer be loaded by CodeGrade. Deleting the files
-will have no effect, because Git stores the history forever. Fixing a
-repository like that is extremely complicated and time-consuming!
+<strong>Warning</strong>: <strong>Never</strong> upload large (raster)
+files to git! If your repository exceeds 100 MiB in size, it will no
+longer be loaded by CodeGrade. Deleting the files will have no effect,
+because Git stores the history forever. <strong>Fixing a repository like
+that is extremely complicated and time-consuming!</strong>
 </p>
 <p>
-<strong><em>Note</em></strong>: Without a <code>LICENSE</code> file,
-your code is copyright, which means that nobody has the right to even
-read it, let alone run it! Make sure to always specify a license that
-would at least allow that.
+<strong>Note</strong>: Without a <code>LICENSE</code> file, your code is
+copyright, which means that nobody has the right to even read it, let
+alone run it! Make sure to always specify a license that would at least
+allow that.
 </p>
 </div>
 <div id="example-main-file" class="section level3">
@@ -1457,7 +1519,7 @@ would at least allow that.
 <p>Typically the header of your main script will look like the
 following:</p>
 <div id="in-r-main.r" class="section level4">
-<h4>in R <code>main.R</code></h4>
+<h4>In R (<code>main.R</code>)</h4>
 <div class="sourceCode" id="cb34"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb34-1"><a href="#cb34-1" tabindex="-1"></a><span class="co"># Team Teamname (John Doe and Jane Smith)</span></span>
 <span id="cb34-2"><a href="#cb34-2" tabindex="-1"></a><span class="co"># January 2020</span></span>
 <span id="cb34-3"><a href="#cb34-3" tabindex="-1"></a><span class="co"># Import packages</span></span>
@@ -1472,8 +1534,8 @@ following:</p>
 <span id="cb34-12"><a href="#cb34-12" tabindex="-1"></a>postboxes <span class="ot">&lt;-</span> <span class="fu">st_read</span>(<span class="st">&#39;data/postbox_locations.gpkg&#39;</span>)</span>
 <span id="cb34-13"><a href="#cb34-13" tabindex="-1"></a><span class="co"># Then the actual commands</span></span></code></pre></div>
 </div>
-<div id="and-now-in-python" class="section level4">
-<h4>and now in Python</h4>
+<div id="in-python-main.py" class="section level4">
+<h4>In Python (<code>main.py</code>)</h4>
 <div class="sourceCode" id="cb35"><pre class="sourceCode python"><code class="sourceCode python"><span id="cb35-1"><a href="#cb35-1" tabindex="-1"></a><span class="co"># Team Teamname (John Doe and Jane Smith)</span></span>
 <span id="cb35-2"><a href="#cb35-2" tabindex="-1"></a><span class="co"># January 2020</span></span>
 <span id="cb35-3"><a href="#cb35-3" tabindex="-1"></a><span class="co"># Import packages</span></span>
@@ -1586,6 +1648,88 @@ absolute file path?
 </div>
 <div id="documentation" class="section level2">
 <h2>Documentation</h2>
+<p>As we have seen in the package examples, documentation of code is
+extremely important to understand what your code is doing. It’s not only
+for others reading your code, but also for yourself, when you have to
+revisit code you haven’t touched in a while. If you follow the good
+scripting habits mentioned above, you will already have your code
+divided into reusable functions, that are in their own function files.
+Each function should have enough comments to understand each step the
+function is performing. Comments are any words after the <code>#</code>
+character, in either language. Same goes for the main script, it should
+also have each step described. But you don’t need to make it redundant:
+if it’s already clear from the function name what it does, it’s useless
+to repeat it in a comment. Rather, you would describe sections of code
+at once, e.g. what a loop does by itself, rather than its indvidual
+steps. In addition, if you use code from someone else, make sure to obey
+the license of the code you are using, and give credit to the original
+author using comments.</p>
+<p>In addition to comments of your code, each function should also have
+a description and an explanation for all of its arguments. In both R and
+Python, there is a special way to add this information in comments next
+to the function definition, so that help files can be generated out of
+them automatically. The systems have different conventions, but
+effectively achieve the same purpose.</p>
+<p>In Python, the system is called <a href="https://peps.python.org/pep-0257/">Docstrings</a>. It consists of
+strings using triple quotes, that effectively acts as a multi-line
+comment. Here’s an example of a Python function documented with a
+Dosctring using the official reStructuredText (Sphinx) format:</p>
+<div class="sourceCode" id="cb36"><pre class="sourceCode python"><code class="sourceCode python"><span id="cb36-1"><a href="#cb36-1" tabindex="-1"></a><span class="kw">def</span> hello(name):</span>
+<span id="cb36-2"><a href="#cb36-2" tabindex="-1"></a>  <span class="co">&quot;&quot;&quot;Greet a person.</span></span>
+<span id="cb36-3"><a href="#cb36-3" tabindex="-1"></a><span class="co">  </span></span>
+<span id="cb36-4"><a href="#cb36-4" tabindex="-1"></a><span class="co">  Give a customised &quot;Hello&quot; greeting for the input name.</span></span>
+<span id="cb36-5"><a href="#cb36-5" tabindex="-1"></a><span class="co">  </span></span>
+<span id="cb36-6"><a href="#cb36-6" tabindex="-1"></a><span class="co">  :param name: A string containing the name of the person to greet.</span></span>
+<span id="cb36-7"><a href="#cb36-7" tabindex="-1"></a><span class="co">  :return: A greeting string.</span></span>
+<span id="cb36-8"><a href="#cb36-8" tabindex="-1"></a><span class="co">  &quot;&quot;&quot;</span></span>
+<span id="cb36-9"><a href="#cb36-9" tabindex="-1"></a>  <span class="cf">return</span>(<span class="st">&quot;Hello &quot;</span> <span class="op">+</span> name)</span></code></pre></div>
+<p>The Docstring will be automatically printed when you run
+<code>help(hello)</code>, and will be converted into a nice webpage
+using tools such as <a href="https://sphinx-rtd-tutorial.readthedocs.io/en/latest/install.html">Sphinx</a>.</p>
+<p>In R, the system is called <a href="https://roxygen2.r-lib.org/articles/rd.html">roxygen2</a> and is
+provided by the <code>roxygen2</code> package. Here’s an equivalent
+example in R, using roxygen2:</p>
+<div class="sourceCode" id="cb37"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb37-1"><a href="#cb37-1" tabindex="-1"></a><span class="co">#&#39; Greet a person</span></span>
+<span id="cb37-2"><a href="#cb37-2" tabindex="-1"></a><span class="co">#&#39; </span></span>
+<span id="cb37-3"><a href="#cb37-3" tabindex="-1"></a><span class="co">#&#39; Give a customised &quot;Hello&quot; greeting for the input name.</span></span>
+<span id="cb37-4"><a href="#cb37-4" tabindex="-1"></a><span class="co">#&#39; </span></span>
+<span id="cb37-5"><a href="#cb37-5" tabindex="-1"></a><span class="co">#&#39; @param name A string containing the name of the person to greet.</span></span>
+<span id="cb37-6"><a href="#cb37-6" tabindex="-1"></a><span class="co">#&#39; @returns A greeting string.</span></span>
+<span id="cb37-7"><a href="#cb37-7" tabindex="-1"></a>hello <span class="ot">&lt;-</span> <span class="cf">function</span>(name) {</span>
+<span id="cb37-8"><a href="#cb37-8" tabindex="-1"></a>  <span class="fu">return</span>(<span class="fu">paste</span>(<span class="st">&quot;Hello&quot;</span>, name))</span>
+<span id="cb37-9"><a href="#cb37-9" tabindex="-1"></a>}</span></code></pre></div>
+<p>The roxygen2 package was created to make it easier to write
+documentation in R, so that documentation does not have to be separate
+from the code. The <code>roxygenize()</code> function generates the
+documentation files from the comments automatically, and then the
+documentation appears when running <code>?hello</code> in our
+example.</p>
+</div>
+<div id="summary" class="section level2">
+<h2>Summary</h2>
+<p>Increasing your scripting/programming efficiency goes through
+adopting good scripting habits. Following the guidelines above will
+ensure that your work:</p>
+<ul>
+<li>Can be understood and used by others.</li>
+<li>Can be understood and reused by you in the future.</li>
+<li>Can be debugged with minimal effort.</li>
+<li>Can be re-used across different projects.</li>
+<li>Is easily accessible by others.</li>
+</ul>
+<p>The summary of good practice guidelines below is not exhaustive, but
+already constitutes a good basis that will help you getting more
+efficient now and in the future when working on scripting projects:</p>
+<ul>
+<li>Comment your code.</li>
+<li>Write functions for code you need more than once:</li>
+<li>Document your functions.</li>
+<li>Keep consistent style.</li>
+<li>Make your own packages, or at least keep a similar directory
+structure across your projects.</li>
+<li>Use version control to develop/maintain your projects and
+packages.</li>
+</ul>
 </div>
 </div>
 <div id="how-to-find-help" class="section level1">
@@ -1625,6 +1769,7 @@ absolute file path?
        <li><a href="#working-directory-relative-and-absolute-file-paths" id="toc-working-directory-relative-and-absolute-file-paths">Working
        directory, relative and absolute file paths</a></li>
        <li><a href="#documentation" id="toc-documentation">Documentation</a></li>
+       <li><a href="#summary" id="toc-summary">Summary</a></li>
        </ul></li>
        <li><a href="#how-to-find-help" id="toc-how-to-find-help">How to
        find help</a>

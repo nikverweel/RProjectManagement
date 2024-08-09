@@ -21,6 +21,8 @@ code[class^="sourceCode"]::before {
 code[class^="sourceCode r"]::before { content: "R Source";}
 code[class^="sourceCode python"]::before { content: "Python Source"; }
 code[class^="sourceCode bash"]::before { content: "Bash Source"; }
+pre[class^="sourceCode r"] {background-color: #333366;}
+pre[class^="sourceCode python"] {background-color: #555533;}
 ```
 
 <font size="6">[WUR Geoscripting](https://geoscripting-wur.github.io/)</font> <img src="https://www.wur.nl/upload/854757ab-168f-46d7-b415-f8b501eebaa5_WUR_RGB_standard_2021-site.svg" alt="WUR logo" style="height: 35px; margin:inherit;"/>
@@ -343,6 +345,25 @@ That was also pretty easy!
 To summarise, we have learned that packages in both Python and R are nothing more than scripts that contain functions, in a particular directory structure.
 If we start developing our projects with that structure in mind, we can make packages out of our scripts very easily!
 
+```{block type="alert alert-info"}
+**Tip**: Once you have a package, you can also have it uploaded to a package repository, so that others (or you from another computer) can easily download and run the code in the package.
+However, it does require you to have your code in good working order and be well documented, since, after all, it's going to be public for everyone to see!
+
+The package repository for Python is called *PyPI*, The Python Package Index.
+PyPI is developer-friendly, which means that you can easily upload your packages on PyPI without much hassle, as long as your project is in a reasonable shape and declares all its dependencies properly.
+See the [PyPI documentation](https://packaging.python.org/en/latest/tutorials/packaging-projects/) to learn more about how to submit packages to PyPI.
+
+The package repository for R is called *CRAN*, the Comprehensive R Archive Network.
+Unlike PyPI, CRAN is end-user-friendly.
+That means that submitting packages to CRAN is not nearly as easy, because it has much higher quality requirements for any (new) packages.
+All packages submitted to CRAN have to pass through both automatic tests (using `R CMD check` command), as well as human review.
+Your package will be rejected if it depends on a package version that is not currently on CRAN, if you fail to document any function parameter, make any typo anywhere or even fail to use quotes correctly.
+Therefore, the package submission process for CRAN is more akin to peer review for publishing a scientific paper.
+However, it ensures that packages always work together with other packages, which immensely simplifies package dependency management and allows users to simply use `install.packages()` and expect the new package to just work.
+Packages are also regularly removed from CRAN if they stop working due to updates in their dependencies, making sure that all packages on CRAN stay compatible with each other.
+See [CRAN documentation](https://cran.r-project.org/web/packages/policies.html) for more information about package submission requirements.
+```
+
 ```{bash include=FALSE}
 rm -rf MyPackage MyPackage_1.0.tar.gz HelloWorld.r
 ```
@@ -354,11 +375,16 @@ remove.packages("MyPackage")
 
 ## Project structure
 
-As we just learned, packages in R and Python have a specific structure that helps packaging and distributing code to others.
-As packages are very easy to create, you can also use them just for yourself!
-For example, if you find that you often reuse the same set of functions, it becomes easier to just make a small package for yourself and install it in your system, rather than having to look for and copy the function into every project you are using it in.
-For that to be easy, you need to stick with a project structure that packages have.
-Another benefit tool of maintaining a consistent project structure is that it will make it easier for you to switch from one project to the other and immediately understand how things work. 
+Making packages is a great way to stay organized, keep track of what you are doing and be able to use it quickly and properly at any time. Packages are:
+
+* Easy to share with others
+* Dependencies are automatically imported and functions are sourced (reduces the risk of having broken dependencies)
+* Documentation is attached to the functions and cannot be lost (or forgotten)
+
+For these reasons, if you build a package, next year you will still be able to run the functions you wrote yesterday. Which is often not the case for stand alone functions that are poorly documented and may depend on many other functions ... that you cannot find any more. So to summarize, packages are not only a way to extend functionality, they are also the standard way to archive and save functions.
+
+To make it easy for you to make a package out of your code, you need to stick with a project structure that packages have.
+Another benefit of maintaining a consistent project structure is that it will make it easier for you to switch from one project to the other and immediately understand how things work. 
 
 To practice keeping a consistent project structure, in this course we will be following the structure below: 
 
@@ -366,6 +392,7 @@ To practice keeping a consistent project structure, in this course we will be fo
 
 * A `main` script at the root of the project. This script performs step by step the different operations of your project. It is the only non-generic part of your project (it contains executable code outside functions, including paths, already set variables, etc.). The file extension of this file will depend on what language you are using for your project. We typically call these files `main.r` and `main.py`, but it could also be e.g. `task1.r`.
 * As we will be working with multiple languages throughout this course we will keep things organized by placing the scripts into their respective language sub-directories (`R/`, `Python/`, and `Bash/`). These directories should contain the functions you have defined as part of your project. These functions should be as generic as possible and are *sourced* and called by the `main` script. The way this is done depends on the language used by the `main` script. For example, in R you would write `source("R/myfunction.R")`. Whereas in Python, you would use `import Python.myfunction`.
+  * Each file in the `R` and `Python` directory should ideally consist of a single function with the same name as the file itself, to make it easy to find. In Python it is common to combine multiple functions in one file, because typically you refer to the file (module) name in addition to the function name (through `import MyPackage`), but it is still good practice to keep each function in its own file (so you don't get confused where each function comes from even if you do `from MyPackage import *`).
 * A `data/` subdirectory: This directory contains data sets of the project. Since Git is not as efficient with non-text files, and GitLab has storage limits, you should only put small data sets in that directory (<2-3 MB). Typically, you do not include it in your git repository at all; rather, this directory is created from your `main` script, and is used to store data downloaded from the internet. It can be safely removed after the script is finished running.
 * An `output/` subdirectory (when applicable), where you place the final result of running your script. This should also not be tracked by git: your scripts create the output, so there is no need to store it.
 * A `README.md` file should be included, this file should contain a description of your project, along with a description of what other packages your script needs to function correctly, and any other instructions needed to correctly run your code. 
@@ -455,8 +482,76 @@ When making Git repository, you want to make sure that all your code is *portabl
 > **Question 1**: what would be the location of this file: `././R/./.././R/./././function2.R`? How about `/./R/./.././R/./././function2.R`? What would be the meaning of `C:/Windows/cmd.exe` on Linux? Is it a relative or absolute file path?
 ```
 
-
 ## Documentation
+
+As we have seen in the package examples, documentation of code is extremely important to understand what your code is doing.
+It's not only for others reading your code, but also for yourself, when you have to revisit code you haven't touched in a while.
+If you follow the good scripting habits mentioned above, you will already have your code divided into reusable functions, that are in their own function files.
+Each function should have enough comments to understand each step the function is performing.
+Comments are any words after the `#` character, in either language.
+Same goes for the main script, it should also have each step described.
+But you don't need to make it redundant: if it's already clear from the function name what it does, it's useless to repeat it in a comment.
+Rather, you would describe sections of code at once, e.g. what a loop does by itself, rather than its indvidual steps.
+In addition, if you use code from someone else, make sure to obey the license of the code you are using, and give credit to the original author using comments.
+
+In addition to comments of your code, each function should also have a description and an explanation for all of its arguments.
+In both R and Python, there is a special way to add this information in comments next to the function definition, so that help files can be generated out of them automatically.
+The systems have different conventions, but effectively achieve the same purpose.
+
+In Python, the system is called [Docstrings](https://peps.python.org/pep-0257/).
+It consists of strings using triple quotes, that effectively acts as a multi-line comment.
+Here's an example of a Python function documented with a Dosctring using the official reStructuredText (Sphinx) format:
+
+```{python}
+def hello(name):
+  """Greet a person.
+  
+  Give a customised "Hello" greeting for the input name.
+  
+  :param name: A string containing the name of the person to greet.
+  :return: A greeting string.
+  """
+  return("Hello " + name)
+```
+
+The Docstring will be automatically printed when you run `help(hello)`, and will be converted into a nice webpage using tools such as [Sphinx](https://sphinx-rtd-tutorial.readthedocs.io/en/latest/install.html).
+
+In R, the system is called [roxygen2](https://roxygen2.r-lib.org/articles/rd.html) and is provided by the `roxygen2` package.
+Here's an equivalent example in R, using roxygen2:
+
+```{r}
+#' Greet a person
+#' 
+#' Give a customised "Hello" greeting for the input name.
+#' 
+#' @param name A string containing the name of the person to greet.
+#' @returns A greeting string.
+hello <- function(name) {
+  return(paste("Hello", name))
+}
+```
+
+The roxygen2 package was created to make it easier to write documentation in R, so that documentation does not have to be separate from the code.
+The `roxygenize()` function generates the documentation files from the comments automatically, and then the documentation appears when running `?hello` in our example.
+
+## Summary
+
+Increasing your scripting/programming efficiency goes through adopting good scripting habits. Following the guidelines above will ensure that your work:
+
+* Can be understood and used by others.
+* Can be understood and reused by you in the future.
+* Can be debugged with minimal effort.
+* Can be re-used across different projects.
+* Is easily accessible by others.
+
+The summary of good practice guidelines below is not exhaustive, but already constitutes a good basis that will help you getting more efficient now and in the future when working on scripting projects:
+
+* Comment your code.
+* Write functions for code you need more than once:
+* Document your functions.
+* Keep consistent style.
+* Make your own packages, or at least keep a similar directory structure across your projects. 
+* Use version control to develop/maintain your projects and packages.
 
 # How to find help
 
